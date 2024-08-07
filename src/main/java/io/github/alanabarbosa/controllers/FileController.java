@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.github.alanabarbosa.data.vo.v1.UploadFileResponseVO;
+import io.github.alanabarbosa.model.File;
 import io.github.alanabarbosa.services.FileStorageService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,26 +57,28 @@ public class FileController {
 				.collect(Collectors.toList());
 	}
 	
-	@GetMapping("/downloadFile/{filename:.+}")
+	@GetMapping("/downloadFile/{filename}")
 	public ResponseEntity<Resource> downloadFile(
-		@PathVariable String filename, HttpServletRequest request) {
-		logger.info("Reading a filea on disk");
-		
-		Resource resource = service.loadFileAsResource(filename);
-		String contentType = "";
-		
-		try {
-			contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-		} catch (Exception e) {
-			logger.info("Could not determine file type!" + e);
-		}
-		
-		if (contentType.isBlank()) contentType = "application/octet-stream";
-		
-		return ResponseEntity.ok()
-				.contentType(MediaType.parseMediaType(contentType))
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" 
-				+ resource.getFilename() + "\"")
-				.body(resource);
+	        @PathVariable String filename, HttpServletRequest request) {
+	    logger.info("Reading a file from database");
+
+	    Resource resource = service.loadFileAsResource(filename);
+	    String contentType = "application/octet-stream";
+
+	    try {
+	        contentType = request.getServletContext().getMimeType(filename);
+	        if (contentType == null || contentType.isBlank()) {
+	            contentType = "application/octet-stream";
+	        }
+	    } catch (Exception e) {
+	        logger.info("Could not determine file type!" + e);
+	    }
+
+	    return ResponseEntity.ok()
+	            .contentType(MediaType.parseMediaType(contentType))
+	            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+	            .body(resource);
 	}
+
+
 }
