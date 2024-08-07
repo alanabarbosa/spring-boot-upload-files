@@ -1,0 +1,31 @@
+server:
+  port: 8888
+secutiry:
+  jwt:
+    token:
+      secret-key: 53ccr37
+      expire-length: 3600000
+cors:
+  originPatterns: http://localhost:3000,http://localhost:8080,https://iclassstore.com.br,https://iclassstore.com
+file:
+  upload-dir: /home/alanabarbosa/Documents/UploadDir
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+springdoc:
+  pathsToMatch: 
+    - /auth/**
+    - /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
